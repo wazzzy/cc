@@ -33,6 +33,25 @@ Example output:
 6 skill(s) installed to /your/project/.claude/skills
 ```
 
+### List skills
+
+Lists all available skills:
+
+```sh
+uvx --from git+https://github.com/wazzzy/cc skills list
+```
+
+Example output:
+
+```
+  interrogate
+  issues-from-prd
+  plan-from-prd
+  tdd-backend
+  tdd-frontend
+  write-prd
+```
+
 ### Uninstall skills
 
 Removes all skill directories from `.claude/skills/`:

@@ -17,6 +17,11 @@ def discover_skills(skills_root: Path) -> list[Path]:
     )
 
 
+def list_skills() -> list[str]:
+    """Return names of all available skills."""
+    return [d.name for d in discover_skills(_skills_root())]
+
+
 def install(cwd: Path, names: list[str] | None = None) -> list[str]:
     """
     Copy skill .md files to <cwd>/.claude/skills/<skill-name>/.

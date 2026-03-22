@@ -76,6 +76,17 @@ class TestCLIUninstall:
         assert "skipped:" in result.stdout
 
 
+class TestCLIList:
+    def test_list_exits_zero(self):
+        result = run_cli("list")
+        assert result.returncode == 0
+
+    def test_list_shows_skills(self):
+        result = run_cli("list")
+        assert "interrogate" in result.stdout
+        assert "write-prd" in result.stdout
+
+
 class TestCLISelective:
     def _first_skill(self, tmp_path: Path) -> str:
         result = run_cli("install", cwd_arg=tmp_path)

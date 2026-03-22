@@ -3,7 +3,7 @@
 import argparse
 from pathlib import Path
 
-from skills.installer import install, uninstall
+from skills.installer import install, list_skills, uninstall
 
 
 def cmd_install(args: argparse.Namespace) -> None:
@@ -34,6 +34,11 @@ def cmd_uninstall(args: argparse.Namespace) -> None:
     print(f"\n{removed} skill(s) removed, {skipped} skipped")
 
 
+def cmd_list(args: argparse.Namespace) -> None:
+    for name in list_skills():
+        print(f"  {name}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="skills",
@@ -53,6 +58,9 @@ def main() -> None:
     uninstall_parser = subparsers.add_parser("uninstall", help="Uninstall skills (all if none specified)")
     uninstall_parser.add_argument("skills", nargs="*", metavar="SKILL")
     uninstall_parser.set_defaults(func=cmd_uninstall)
+
+    list_parser = subparsers.add_parser("list", help="List available skills")
+    list_parser.set_defaults(func=cmd_list)
 
     args = parser.parse_args()
     args.func(args)
