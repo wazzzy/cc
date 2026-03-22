@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from ccskills.installer import install, uninstall
+from skills.installer import install, uninstall
 
 
 @pytest.fixture()
@@ -26,7 +26,7 @@ def fake_skills_root(tmp_path: Path) -> Path:
 
 
 def _patch_root(fake_root: Path):
-    return patch("ccskills.installer._skills_root", return_value=fake_root)
+    return patch("skills.installer._skills_root", return_value=fake_root)
 
 
 class TestInstall:
@@ -115,3 +115,45 @@ class TestUninstall:
         cwd.mkdir()
         with _patch_root(fake_skills_root):
             uninstall(cwd)  # must not raise
+
+
+class TestSelectiveInstall:
+    def test_install_single(self, fake_skills_root: Path, tmp_path: Path):
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_skills_root):
+            result = install(cwd, ["skill-a"])
+        assert result == ["skill-a"]
+        assert (cwd / ".claude" / "skills" / "skill-a").is_dir()
+        assert not (cwd / ".claude" / "skills" / "skill-b").exists()
+
+    def test_install_multiple(self, fake_skills_root: Path, tmp_path: Path):
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_skills_root):
+            result = install(cwd, ["skill-a", "skill-b"])
+        assert sorted(result) == ["skill-a", "skill-b"]
+
+    def test_install_unknown_raises(self, fake_skills_root: Path, tmp_path: Path):
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_skills_root):
+            with pytest.raises(ValueError, match="unknown skill"):
+                install(cwd, ["nope"])
+
+    def test_uninstall_single(self, fake_skills_root: Path, tmp_path: Path):
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_skills_root):
+            install(cwd)
+            results = uninstall(cwd, ["skill-a"])
+        assert results == {"skill-a": "removed"}
+        assert not (cwd / ".claude" / "skills" / "skill-a").exists()
+        assert (cwd / ".claude" / "skills" / "skill-b").exists()
+
+    def test_uninstall_unknown_raises(self, fake_skills_root: Path, tmp_path: Path):
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_skills_root):
+            with pytest.raises(ValueError, match="unknown skill"):
+                uninstall(cwd, ["nope"])

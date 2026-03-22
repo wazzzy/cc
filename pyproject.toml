@@ -3,14 +3,14 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.backends.legacy:build"
 
 [project]
-name = "ccskills"
+name = "skills"
 version = "0.1.0"
 description = "Install Claude Code skills into your project"
 requires-python = ">=3.9"
 dependencies = []
 
 [project.scripts]
-ccskills = "ccskills.cli:main"
+skills = "skills.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

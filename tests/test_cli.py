@@ -1,4 +1,4 @@
-"""CLI integration tests: invoke ccskills as a subprocess against a temp dir."""
+"""CLI integration tests: invoke skills as a subprocess against a temp dir."""
 
 import os
 import subprocess
@@ -9,7 +9,7 @@ _SRC = str(Path(__file__).parent.parent / "src")
 
 
 def run_cli(*args: str, cwd_arg: Path | None = None) -> subprocess.CompletedProcess:
-    cmd = [sys.executable, "-m", "ccskills.cli"]
+    cmd = [sys.executable, "-m", "skills.cli"]
     if cwd_arg is not None:
         cmd += ["--cwd", str(cwd_arg)]
     cmd += list(args)
@@ -74,3 +74,37 @@ class TestCLIUninstall:
     def test_uninstall_clean_dir_output_has_skipped(self, tmp_path: Path):
         result = run_cli("uninstall", cwd_arg=tmp_path)
         assert "skipped:" in result.stdout
+
+
+class TestCLISelective:
+    def _first_skill(self, tmp_path: Path) -> str:
+        result = run_cli("install", cwd_arg=tmp_path)
+        skills_dir = tmp_path / ".claude" / "skills"
+        return sorted(d.name for d in skills_dir.iterdir() if d.is_dir())[0]
+
+    def test_install_single_skill(self, tmp_path: Path):
+        skill = self._first_skill(tmp_path)
+        tmp2 = tmp_path / "proj2"
+        tmp2.mkdir()
+        result = run_cli("install", skill, cwd_arg=tmp2)
+        assert result.returncode == 0
+        skills_dir = tmp2 / ".claude" / "skills"
+        installed = [d.name for d in skills_dir.iterdir() if d.is_dir()]
+        assert installed == [skill]
+
+    def test_install_unknown_skill_fails(self, tmp_path: Path):
+        result = run_cli("install", "no-such-skill", cwd_arg=tmp_path)
+        assert result.returncode != 0
+        assert "unknown skill" in result.stdout
+
+    def test_uninstall_single_skill(self, tmp_path: Path):
+        skill = self._first_skill(tmp_path)
+        result = run_cli("uninstall", skill, cwd_arg=tmp_path)
+        assert result.returncode == 0
+        assert f"removed: {skill}" in result.stdout
+        assert not (tmp_path / ".claude" / "skills" / skill).exists()
+
+    def test_uninstall_unknown_skill_fails(self, tmp_path: Path):
+        result = run_cli("uninstall", "no-such-skill", cwd_arg=tmp_path)
+        assert result.returncode != 0
+        assert "unknown skill" in result.stdout
