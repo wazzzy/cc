@@ -17,7 +17,7 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-5. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. The PRD should be created as a file.
+5. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. The PRD should be created as a file in docs/prds/ folder.
 
 <prd-template>
 
@@ -37,6 +37,17 @@ A LONG, numbered list of user stories. Each user story should be in the format o
 
 <user-story-example>
 1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
+
+**Acceptance Criteria:**
+- Balance Display – Available balance is visible for each account on the Accounts screen, shown in the correct currency format.
+- Multiple Accounts – Each account is listed separately with its masked account number and individual balance.
+- Fresh Data – Balance reflects recent transactions and displays a "last updated" timestamp.
+- Pull to Refresh – Pulling down on the Accounts screen fetches and updates the latest balance.
+- Hide/Show Toggle – User can mask/unmask their balance with a tap, and the preference persists for the session.
+- Error State – If balance cannot be loaded, a clear error message and retry option are shown.
+- Accessibility – Balance and account name are screen reader compatible.
+- Authentication Gate – User must authenticate before any balance information is displayed.
+
 </user-story-example>
 
 This list of user stories should be extremely extensive and cover all aspects of the feature.
