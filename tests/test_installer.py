@@ -5,7 +5,15 @@ from unittest.mock import patch
 
 import pytest
 
-from skills.installer import install, uninstall
+import skills.installer as _mod
+from skills.installer import install, uninstall, discover_skills, _skills_root
+
+
+def test_skills_bundled_in_package():
+    """Skills must live inside the package dir so they're included when installed via uvx."""
+    pkg_dir = Path(_mod.__file__).parent
+    found = discover_skills(pkg_dir)
+    assert len(found) > 0, "no skills found inside package dir — skill dirs must be under src/skills/"
 
 
 @pytest.fixture()

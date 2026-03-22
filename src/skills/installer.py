@@ -5,8 +5,8 @@ from pathlib import Path
 
 
 def _skills_root() -> Path:
-    """Return the directory containing all skill folders (the package root)."""
-    return Path(__file__).parent.parent.parent
+    """Return the directory containing all skill folders (the package dir)."""
+    return Path(__file__).parent
 
 
 def discover_skills(skills_root: Path) -> list[Path]:

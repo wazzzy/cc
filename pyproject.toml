@@ -16,7 +16,7 @@ skills = "skills.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"*" = ["**/*.md"]
+skills = ["**/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
