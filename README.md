@@ -5,13 +5,7 @@ Claude Code skills for software development workflows.
 ## Install
 
 ```sh
-uv tool install git+https://github.com/wasimkarani/skills
-```
-
-Or run without installing:
-
-```sh
-uvx --from git+https://github.com/wasimkarani/skills skills install
+uvx --from git+https://github.com/wasimkarani/cc skills install
 ```
 
 ## Usage
@@ -23,7 +17,7 @@ Run these commands from your project root.
 Copies all skill files into `.claude/skills/` in the current directory:
 
 ```sh
-skills install
+uvx --from git+https://github.com/wasimkarani/cc skills install
 ```
 
 Example output:
@@ -44,7 +38,7 @@ Example output:
 Removes all skill directories from `.claude/skills/`:
 
 ```sh
-skills uninstall
+uvx --from git+https://github.com/wasimkarani/cc skills uninstall
 ```
 
 Example output:
