@@ -5,7 +5,7 @@ description: Turn a PRD into a multi-phase implementation plan using tracer-bull
 
 # PRD to Plan
 
-Break a PRD into a phased implementation plan using vertical slices (tracer bullets). Output is a Markdown file in `./docs/plans/`.
+Break a PRD into a phased implementation plan using vertical slices (tracer bullets). Output is a Markdown file in `./docs/plans/<prd_date>/`, where `<prd_date>` is the YYYY-MM-DD date extracted from the PRD's file path.
 
 ## Process
 
@@ -57,7 +57,7 @@ Iterate until the user approves the breakdown.
 
 ### 6. Write the plan file
 
-Create `./docs/plans/` if it doesn't exist. Write the plan as a Markdown file named after the feature (e.g. `./docs/plans/user-onboarding.md`). Use the template below.
+Create `./docs/plans/<prd_date>/` if it doesn't exist, where `<prd_date>` is the YYYY-MM-DD date extracted from the PRD's file path (e.g. if PRD is at `docs/prds/2026-03-23/auth.md`, use `2026-03-23`). Write the plan as a Markdown file named after the feature (e.g. `./docs/plans/2026-03-23/user-onboarding.md`). Use the template below.
 
 <plan-template>
 # Plan: <Feature Name>

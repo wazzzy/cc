@@ -45,7 +45,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Create the issue files
 
-For each approved slice, create a issue file with a # issue number in the name of a file in 'docs/issues' directory. Use the issue body template below.
+For each approved slice, create a issue file with a # issue number in the name of a file in `docs/issues/<prd_date>/` directory, where `<prd_date>` is the YYYY-MM-DD date extracted from the PRD's file path (e.g. if PRD is at `docs/prds/2026-03-23/auth.md`, use `docs/issues/2026-03-23/`). Use the issue body template below.
 
 Create issues in dependency order (blockers first) so you can reference real issue numbers in the "Blocked by" field.
 
