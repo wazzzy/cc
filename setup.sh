@@ -66,9 +66,9 @@ CONTENT
 }
 
 main() {
-  run_step "Installing Claude Code..." "Claude Code installed" "Claude Code install failed" install_claude_code
-  run_step "Configuring PATH..." "PATH configured" "PATH config failed" configure_path
-  run_step "Writing CLAUDE.md..." "CLAUDE.md written" "CLAUDE.md write failed" write_claude_md
+  run_step "Installing CC..." "CC installed..." "Claude Code install failed" install_claude_code
+  run_step "Configuring PATH..." "PATH configured..." "PATH config failed" configure_path
+  run_step "Writing CLAUDE.md..." "CLAUDE.md written..." "CLAUDE.md write failed" write_claude_md
   echo ""
   echo "Setup complete. Run 'source ~/.zshrc' or open a new terminal."
 }
