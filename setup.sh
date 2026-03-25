@@ -57,6 +57,7 @@ write_claude_md() {
   mkdir -p ~/.claude
   cat > ~/.claude/CLAUDE.md << 'CONTENT'
 - In all interactions and commit messages, be extremely concise and sacrifice grammer for the sake of concision.
+- Never add Co-Authored-By or attribution trailers to commit messages.
 
 ## Plans
 
