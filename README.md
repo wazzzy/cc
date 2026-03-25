@@ -2,7 +2,15 @@
 
 Claude Code skills for software development workflows.
 
-## Install
+## Setup
+
+Bootstrap Claude Code, configure PATH, and create a default `~/.claude/CLAUDE.md`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/wazzzy/cc/main/setup.sh | bash
+```
+
+## Install skills
 
 ```sh
 uvx --from git+https://github.com/wazzzy/cc skills install
