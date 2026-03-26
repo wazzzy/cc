@@ -11,12 +11,14 @@ dependencies = []
 
 [project.scripts]
 skills = "skills.cli:main"
+claude-md = "templates.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
 "skills" = ["**/*.md"]
+"templates" = ["**/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
