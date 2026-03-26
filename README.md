@@ -1,6 +1,6 @@
-# skills
+# cc
 
-Claude Code skills for software development workflows.
+Claude Code skills and CLAUDE.md templates for software development workflows.
 
 ## Setup
 
@@ -18,78 +18,98 @@ uvx --from git+https://github.com/wazzzy/cc skills install
 
 ## Usage
 
-Run these commands from your project root.
+### skills
 
-### Install skills
+#### Install
 
-Copies all skill files into `.claude/skills/` in the current directory:
+Bare install copies user-scoped skills to `~/.claude/skills/`:
 
 ```sh
 uvx --from git+https://github.com/wazzzy/cc skills install
 ```
 
-Example output:
+Install project-scoped skills (e.g. tdd-backend) to `.claude/skills/` in cwd:
 
-```
-  installed: interrogate
-  installed: issues-from-prd
-  installed: plan-from-prd
-  installed: tdd-backend
-  installed: tdd-frontend
-  installed: write-prd
-
-6 skill(s) installed to /your/project/.claude/skills
+```sh
+uvx --from git+https://github.com/wazzzy/cc skills install tdd-backend
 ```
 
-### List skills
-
-Lists all available skills:
+#### List
 
 ```sh
 uvx --from git+https://github.com/wazzzy/cc skills list
 ```
 
-Example output:
-
 ```
-  interrogate
-  issues-from-prd
-  plan-from-prd
-  tdd-backend
-  tdd-frontend
-  write-prd
+  interrogate        (user)
+  issues-from-prd    (user)
+  plan-from-prd      (user)
+  tdd-backend        (project)
+  tdd-frontend       (project)
+  write-prd          (user)
 ```
 
-### Uninstall skills
+#### Uninstall
 
-Removes all skill directories from `.claude/skills/`:
+Bare uninstall removes user-scoped skills from `~/.claude/skills/`:
 
 ```sh
 uvx --from git+https://github.com/wazzzy/cc skills uninstall
 ```
 
-Example output:
+Named uninstall routes by scope:
 
-```
-  removed: interrogate
-  removed: issues-from-prd
-  removed: plan-from-prd
-  removed: tdd-backend
-  removed: tdd-frontend
-  removed: write-prd
-
-6 skill(s) removed, 0 skipped
+```sh
+uvx --from git+https://github.com/wazzzy/cc skills uninstall tdd-backend
 ```
 
-Re-running `install` is safe — existing files are overwritten without error.
+### claude-md
+
+Copy CLAUDE.md templates into your project.
+
+#### List templates
+
+```sh
+uvx --from git+https://github.com/wazzzy/cc claude-md list
+```
+
+```
+  django    (default: ./backend/)
+```
+
+#### Init
+
+Copy Django CLAUDE.md into `./backend/`:
+
+```sh
+uvx --from git+https://github.com/wazzzy/cc claude-md init django
+```
+
+Custom target path:
+
+```sh
+uvx --from git+https://github.com/wazzzy/cc claude-md init django --path ./my-app
+```
+
+Overwrite existing:
+
+```sh
+uvx --from git+https://github.com/wazzzy/cc claude-md init django --force
+```
 
 ## Skills
 
-| Skill | Description |
-|---|---|
-| `write-prd` | Create a PRD through user interview and codebase exploration |
-| `plan-from-prd` | Turn a PRD into a multi-phase implementation plan |
-| `issues-from-prd` | Break a PRD into independently-grabbable issues |
-| `interrogate` | Stress-test a plan through relentless interviewing |
-| `tdd-backend` | TDD for Python/Django with red-green-refactor |
-| `tdd-frontend` | TDD for TypeScript/React/Next.js with RTL + Vitest |
+| Skill | Scope | Description |
+|---|---|---|
+| `interrogate` | user | Stress-test a plan through relentless interviewing |
+| `write-prd` | user | Create a PRD through user interview and codebase exploration |
+| `plan-from-prd` | user | Turn a PRD into a multi-phase implementation plan |
+| `issues-from-prd` | user | Break a PRD into independently-grabbable issues |
+| `tdd-backend` | project | TDD for Python/Django with red-green-refactor |
+| `tdd-frontend` | project | TDD for TypeScript/React/Next.js with RTL + Vitest |
+
+## Templates
+
+| Template | Default path | Description |
+|---|---|---|
+| `django` | `./backend/` | CLAUDE.md for Python/Django projects |

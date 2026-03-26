@@ -5,7 +5,7 @@ from pathlib import Path
 
 # Default target paths relative to cwd for each template.
 DEFAULT_PATHS: dict[str, str] = {
-    "backend": "backend",
+    "django": "backend",
 }
 
 

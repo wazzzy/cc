@@ -19,9 +19,9 @@ def test_templates_bundled_in_package():
 @pytest.fixture()
 def fake_templates_root(tmp_path: Path) -> Path:
     """Create a fake templates root with one template."""
-    tpl = tmp_path / "backend"
+    tpl = tmp_path / "django"
     tpl.mkdir()
-    (tpl / "CLAUDE.md").write_text("# Backend template")
+    (tpl / "CLAUDE.md").write_text("# Django template")
     # Dir without CLAUDE.md — should be ignored
     other = tmp_path / "not-a-template"
     other.mkdir()
@@ -37,7 +37,7 @@ class TestListTemplates:
     def test_returns_name_and_default_path(self, fake_templates_root: Path):
         with _patch_root(fake_templates_root):
             result = list_templates()
-        assert ("backend", "backend") in result
+        assert ("django", "backend") in result
 
     def test_does_not_include_non_templates(self, fake_templates_root: Path):
         with _patch_root(fake_templates_root):
@@ -50,23 +50,23 @@ class TestInit:
         cwd = tmp_path / "project"
         cwd.mkdir()
         with _patch_root(fake_templates_root):
-            status, dest = init(cwd, "backend")
+            status, dest = init(cwd, "django")
         assert status == "created"
         assert dest == cwd / "backend" / "CLAUDE.md"
-        assert dest.read_text() == "# Backend template"
+        assert dest.read_text() == "# Django template"
 
     def test_creates_target_dir_if_missing(self, fake_templates_root: Path, tmp_path: Path):
         cwd = tmp_path / "project"
         cwd.mkdir()
         with _patch_root(fake_templates_root):
-            init(cwd, "backend")
+            init(cwd, "django")
         assert (cwd / "backend").is_dir()
 
     def test_custom_path(self, fake_templates_root: Path, tmp_path: Path):
         cwd = tmp_path / "project"
         cwd.mkdir()
         with _patch_root(fake_templates_root):
-            status, dest = init(cwd, "backend", path="my-app")
+            status, dest = init(cwd, "django", path="my-app")
         assert dest == cwd / "my-app" / "CLAUDE.md"
         assert dest.exists()
 
@@ -76,7 +76,7 @@ class TestInit:
         target.mkdir(parents=True)
         (target / "CLAUDE.md").write_text("existing content")
         with _patch_root(fake_templates_root):
-            status, dest = init(cwd, "backend")
+            status, dest = init(cwd, "django")
         assert status == "skipped"
         assert dest.read_text() == "existing content"
 
@@ -86,9 +86,9 @@ class TestInit:
         target.mkdir(parents=True)
         (target / "CLAUDE.md").write_text("old content")
         with _patch_root(fake_templates_root):
-            status, dest = init(cwd, "backend", force=True)
+            status, dest = init(cwd, "django", force=True)
         assert status == "overwritten"
-        assert dest.read_text() == "# Backend template"
+        assert dest.read_text() == "# Django template"
 
     def test_unknown_template_raises(self, fake_templates_root: Path, tmp_path: Path):
         with _patch_root(fake_templates_root):
@@ -99,6 +99,6 @@ class TestInit:
         cwd = tmp_path / "project"
         cwd.mkdir()
         with _patch_root(fake_templates_root):
-            init(cwd, "backend")
-            status, _ = init(cwd, "backend", force=True)
+            init(cwd, "django")
+            status, _ = init(cwd, "django", force=True)
         assert status == "overwritten"
