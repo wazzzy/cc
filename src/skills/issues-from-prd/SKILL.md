@@ -1,5 +1,6 @@
 ---
 name: issues-from-prd
+scope: user
 description: Break a PRD into independently-grabbable issues using tracer-bullet vertical slices. Use when user says "convert the PRD to issues", "create issues from the PRD", or "break the PRD into work items". Do NOT trigger for phase planning or PRD writing.
 ---
 

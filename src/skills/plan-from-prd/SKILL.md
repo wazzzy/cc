@@ -1,5 +1,6 @@
 ---
 name: plan-from-prd
+scope: user
 description: Turn a PRD into a multi-phase implementation plan using tracer-bullet vertical slices, saved as a local Markdown file in ./docs/plans/. Use when user says "create a plan from the PRD", "break the PRD into phases", "plan this from the PRD", or mentions "tracer bullets" with a PRD in context. Do NOT trigger for issue creation or PRD writing.
 ---
 

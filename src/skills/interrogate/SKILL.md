@@ -1,5 +1,6 @@
 ---
 name: interrogate
+scope: user
 description: Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user says "interrogate me", "stress-test my plan", or "challenge my design". Do NOT trigger for PRD writing or general Q&A.
 ---
 

@@ -9,34 +9,43 @@ from skills.installer import install, list_skills, uninstall
 def cmd_install(args: argparse.Namespace) -> None:
     cwd = Path(args.cwd) if args.cwd else Path.cwd()
     names = args.skills or None
+    if args.cwd and names is None:
+        print("warning: --cwd has no effect on user-level skills")
     try:
-        skills = install(cwd, names)
+        results = install(cwd, names)
     except ValueError as e:
         print(f"error: {e}")
         raise SystemExit(1)
-    for name in skills:
-        print(f"  installed: {name}")
-    print(f"\n{len(skills)} skill(s) installed to {cwd / '.claude' / 'skills'}")
+    for name, scope, dest in results:
+        print(f"  installed: {name} ({scope}) -> {dest}")
+    print(f"\n{len(results)} skill(s) installed")
 
 
 def cmd_uninstall(args: argparse.Namespace) -> None:
     cwd = Path(args.cwd) if args.cwd else Path.cwd()
     names = args.skills or None
+    if args.cwd and names is None:
+        print("warning: --cwd has no effect on user-level skills")
     try:
         results = uninstall(cwd, names)
     except ValueError as e:
         print(f"error: {e}")
         raise SystemExit(1)
-    for name, status in results.items():
-        print(f"  {status}: {name}")
-    removed = sum(1 for s in results.values() if s == "removed")
-    skipped = sum(1 for s in results.values() if s == "skipped")
-    print(f"\n{removed} skill(s) removed, {skipped} skipped")
+    for name, (status, scope) in results.items():
+        print(f"  {status}: {name} ({scope})")
+    removed = sum(1 for s, _ in results.values() if s == "removed")
+    skipped = sum(1 for s, _ in results.values() if s == "skipped")
+    print(f"\n{removed} removed, {skipped} skipped")
 
 
 def cmd_list(args: argparse.Namespace) -> None:
-    for name in list_skills():
-        print(f"  {name}")
+    skills = list_skills()
+    if not skills:
+        print("  (none)")
+        return
+    max_name = max(len(name) for name, _ in skills)
+    for name, scope in skills:
+        print(f"  {name:<{max_name}}    ({scope})")
 
 
 def main() -> None:

@@ -1,4 +1,4 @@
-"""File installer: copies skill .md files into <cwd>/.claude/skills/<skill-name>/."""
+"""File installer: copies skill .md files into user or project .claude/skills/."""
 
 import shutil
 from pathlib import Path
@@ -9,6 +9,30 @@ def _skills_root() -> Path:
     return Path(__file__).parent
 
 
+def parse_scope(skill_dir: Path) -> str:
+    """Read SKILL.md frontmatter and return the scope value ('user' or 'project')."""
+    skill_md = skill_dir / "SKILL.md"
+    if not skill_md.exists():
+        return "project"
+    text = skill_md.read_text()
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return "project"
+    for line in lines[1:]:
+        if line.strip() == "---":
+            break
+        if line.startswith("scope:"):
+            return line.split(":", 1)[1].strip()
+    return "project"
+
+
+def _dest_path(cwd: Path, skill_name: str, scope: str) -> Path:
+    """Return target directory for a skill based on its scope."""
+    if scope == "user":
+        return Path.home() / ".claude" / "skills" / skill_name
+    return cwd / ".claude" / "skills" / skill_name
+
+
 def discover_skills(skills_root: Path) -> list[Path]:
     """Return all skill dirs (top-level dirs containing SKILL.md)."""
     return sorted(
@@ -17,17 +41,22 @@ def discover_skills(skills_root: Path) -> list[Path]:
     )
 
 
-def list_skills() -> list[str]:
-    """Return names of all available skills."""
-    return [d.name for d in discover_skills(_skills_root())]
+def list_skills() -> list[tuple[str, str]]:
+    """Return (name, scope) for all available skills."""
+    return [
+        (d.name, parse_scope(d))
+        for d in discover_skills(_skills_root())
+    ]
 
 
-def install(cwd: Path, names: list[str] | None = None) -> list[str]:
+def install(cwd: Path, names: list[str] | None = None) -> list[tuple[str, str, Path]]:
     """
-    Copy skill .md files to <cwd>/.claude/skills/<skill-name>/.
+    Copy skill .md files to user or project .claude/skills/<skill-name>/.
 
-    If names is given, only those skills are installed. Returns list of skill names installed.
-    Raises ValueError for any name not found.
+    Bare install (names=None) only installs scope:user skills.
+    Named install routes each skill by its scope.
+    Returns list of (name, scope, dest_path).
+    Raises ValueError for unknown names.
     """
     skills_root = _skills_root()
     skills = discover_skills(skills_root)
@@ -38,28 +67,33 @@ def install(cwd: Path, names: list[str] | None = None) -> list[str]:
         if unknown:
             raise ValueError(f"unknown skill(s): {', '.join(unknown)}")
         skills = [d for d in skills if d.name in names]
+    else:
+        skills = [d for d in skills if parse_scope(d) == "user"]
 
     installed = []
 
     for skill_dir in skills:
-        dest = cwd / ".claude" / "skills" / skill_dir.name
+        scope = parse_scope(skill_dir)
+        dest = _dest_path(cwd, skill_dir.name, scope)
         dest.mkdir(parents=True, exist_ok=True)
 
         for src_file in skill_dir.iterdir():
             if src_file.is_file() and src_file.suffix == ".md" and not src_file.name.startswith("."):
                 shutil.copy2(src_file, dest / src_file.name)
 
-        installed.append(skill_dir.name)
+        installed.append((skill_dir.name, scope, dest))
 
     return installed
 
 
-def uninstall(cwd: Path, names: list[str] | None = None) -> dict[str, str]:
+def uninstall(cwd: Path, names: list[str] | None = None) -> dict[str, tuple[str, str]]:
     """
-    Remove skill dirs from <cwd>/.claude/skills/.
+    Remove skill dirs from user or project .claude/skills/.
 
-    If names is given, only those skills are removed. Returns dict of skill_name -> "removed" | "skipped".
-    Raises ValueError for any name not found.
+    Bare uninstall (names=None) only removes scope:user skills.
+    Named uninstall routes each skill by its scope.
+    Returns dict of skill_name -> (status, scope).
+    Raises ValueError for unknown names.
     """
     skills_root = _skills_root()
     skills = discover_skills(skills_root)
@@ -70,15 +104,18 @@ def uninstall(cwd: Path, names: list[str] | None = None) -> dict[str, str]:
         if unknown:
             raise ValueError(f"unknown skill(s): {', '.join(unknown)}")
         skills = [d for d in skills if d.name in names]
+    else:
+        skills = [d for d in skills if parse_scope(d) == "user"]
 
     results = {}
 
     for skill_dir in skills:
-        dest = cwd / ".claude" / "skills" / skill_dir.name
+        scope = parse_scope(skill_dir)
+        dest = _dest_path(cwd, skill_dir.name, scope)
         if dest.exists():
             shutil.rmtree(dest)
-            results[skill_dir.name] = "removed"
+            results[skill_dir.name] = ("removed", scope)
         else:
-            results[skill_dir.name] = "skipped"
+            results[skill_dir.name] = ("skipped", scope)
 
     return results

@@ -1,5 +1,6 @@
 ---
 name: tdd-backend
+scope: project
 description: Test-driven development for backend (Python/Django). Use when building backend features with TDD, writing Django TestCase or APITestCase tests, or user mentions "red-green-refactor" in a backend context. Do NOT trigger for frontend/React/TypeScript TDD.
 ---
 

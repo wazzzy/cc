@@ -1,5 +1,6 @@
 ---
 name: write-prd
+scope: user
 description: Create a PRD through user interview, codebase exploration, and module design, then file. Use when user says "write a PRD", "create a PRD", "write a product requirements document", or "document this feature". Do NOT trigger for planning phases or breaking down an existing PRD.
 ---
 

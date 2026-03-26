@@ -1,5 +1,6 @@
 ---
 name: tdd-frontend
+scope: project
 description: Test-driven development for frontend (TypeScript/React/Next.js). Use when building frontend features with TDD, writing RTL or Vitest tests, or user mentions "red-green-refactor" in a frontend context. Do NOT trigger for backend/Django/Python TDD.
 ---
 
