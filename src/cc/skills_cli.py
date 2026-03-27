@@ -1,4 +1,4 @@
-"""skills CLI entry point."""
+"""skills CLI: install, uninstall, list Claude Code skills."""
 
 import argparse
 from pathlib import Path
@@ -53,23 +53,19 @@ def main() -> None:
         prog="skills",
         description="Install Claude Code skills into your project",
     )
-    parser.add_argument(
-        "--cwd",
-        metavar="DIR",
-        help="target project directory (default: current directory)",
-    )
+    parser.add_argument("--cwd", metavar="DIR", help="target project directory (default: cwd)")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    install_parser = subparsers.add_parser("install", help="Install skills (all if none specified)")
-    install_parser.add_argument("skills", nargs="*", metavar="SKILL")
-    install_parser.set_defaults(func=cmd_install)
+    install_p = subparsers.add_parser("install", help="Install skills (user-scoped by default)")
+    install_p.add_argument("skills", nargs="*", metavar="SKILL")
+    install_p.set_defaults(func=cmd_install)
 
-    uninstall_parser = subparsers.add_parser("uninstall", help="Uninstall skills (all if none specified)")
-    uninstall_parser.add_argument("skills", nargs="*", metavar="SKILL")
-    uninstall_parser.set_defaults(func=cmd_uninstall)
+    uninstall_p = subparsers.add_parser("uninstall", help="Uninstall skills")
+    uninstall_p.add_argument("skills", nargs="*", metavar="SKILL")
+    uninstall_p.set_defaults(func=cmd_uninstall)
 
-    list_parser = subparsers.add_parser("list", help="List available skills")
-    list_parser.set_defaults(func=cmd_list)
+    list_p = subparsers.add_parser("list", help="List available skills")
+    list_p.set_defaults(func=cmd_list)
 
     args = parser.parse_args()
     args.func(args)

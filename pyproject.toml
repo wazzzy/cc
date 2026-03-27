@@ -10,7 +10,8 @@ requires-python = ">=3.9"
 dependencies = []
 
 [project.scripts]
-cc = "cc.cli:main"
+skills = "cc.skills_cli:main"
+template = "cc.template_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

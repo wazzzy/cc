@@ -10,20 +10,7 @@ Bootstrap Claude Code, configure PATH, and create a default `~/.claude/CLAUDE.md
 curl -fsSL https://raw.githubusercontent.com/wazzzy/cc/main/setup.sh | bash
 ```
 
-## Install
-
-```sh
-uvx --from git+https://github.com/wazzzy/cc cc skills install
-```
-
 ## Usage
-
-All commands use the unified `cc` CLI:
-
-```
-cc skills <install|uninstall|list> [--cwd DIR] [SKILL...]
-cc template <init|list> [--cwd DIR] [args]
-```
 
 ### skills
 
@@ -32,19 +19,19 @@ cc template <init|list> [--cwd DIR] [args]
 Bare install copies user-scoped skills to `~/.claude/skills/`:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc skills install
+uvx --from git+https://github.com/wazzzy/cc skills install
 ```
 
 Install a project-scoped skill to `.claude/skills/` in cwd:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc skills install tdd-backend
+uvx --from git+https://github.com/wazzzy/cc skills install tdd-backend
 ```
 
 #### List
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc skills list
+uvx --from git+https://github.com/wazzzy/cc skills list
 ```
 
 ```
@@ -58,16 +45,14 @@ uvx --from git+https://github.com/wazzzy/cc cc skills list
 
 #### Uninstall
 
-Bare uninstall removes user-scoped skills from `~/.claude/skills/`:
-
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc skills uninstall
+uvx --from git+https://github.com/wazzzy/cc skills uninstall
 ```
 
 Named uninstall routes by scope:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc skills uninstall tdd-backend
+uvx --from git+https://github.com/wazzzy/cc skills uninstall tdd-backend
 ```
 
 ### template
@@ -75,7 +60,7 @@ uvx --from git+https://github.com/wazzzy/cc cc skills uninstall tdd-backend
 #### List
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc template list
+uvx --from git+https://github.com/wazzzy/cc template list
 ```
 
 ```
@@ -87,19 +72,19 @@ uvx --from git+https://github.com/wazzzy/cc cc template list
 Copy the Django CLAUDE.md into `./backend/`:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc template init django
+uvx --from git+https://github.com/wazzzy/cc template django
 ```
 
 Custom target path:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc template init django --path ./my-app
+uvx --from git+https://github.com/wazzzy/cc template django --path ./my-app
 ```
 
 Overwrite existing:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc cc template init django --force
+uvx --from git+https://github.com/wazzzy/cc template django --force
 ```
 
 ## Skills

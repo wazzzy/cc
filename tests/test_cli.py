@@ -1,4 +1,4 @@
-"""CLI integration tests: invoke cc as a subprocess against a temp dir."""
+"""CLI integration tests: invoke skills and template as subprocesses."""
 
 import os
 import subprocess
@@ -8,20 +8,8 @@ from pathlib import Path
 _SRC = str(Path(__file__).parent.parent / "src")
 
 
-def run_cli(*args: str, cwd_arg: Path | None = None, home: Path | None = None) -> subprocess.CompletedProcess:
-    cmd = [sys.executable, "-m", "cc.cli"]
-    if cwd_arg is not None:
-        cmd += ["--cwd", str(cwd_arg)]  # inserted before the subcommand group
-    cmd += list(args)
-    env = {**os.environ, "PYTHONPATH": _SRC}
-    if home is not None:
-        env["HOME"] = str(home)
-    return subprocess.run(cmd, capture_output=True, text=True, env=env)
-
-
 def run_skills(*args: str, cwd_arg: Path | None = None, home: Path | None = None) -> subprocess.CompletedProcess:
-    """Run: cc skills [--cwd DIR] <subcommand> [args]"""
-    cmd = [sys.executable, "-m", "cc.cli", "skills"]
+    cmd = [sys.executable, "-m", "cc.skills_cli"]
     if cwd_arg is not None:
         cmd += ["--cwd", str(cwd_arg)]
     cmd += list(args)
@@ -32,8 +20,7 @@ def run_skills(*args: str, cwd_arg: Path | None = None, home: Path | None = None
 
 
 def run_template(*args: str, cwd_arg: Path | None = None, home: Path | None = None) -> subprocess.CompletedProcess:
-    """Run: cc template [--cwd DIR] <subcommand> [args]"""
-    cmd = [sys.executable, "-m", "cc.cli", "template"]
+    cmd = [sys.executable, "-m", "cc.template_cli"]
     if cwd_arg is not None:
         cmd += ["--cwd", str(cwd_arg)]
     cmd += list(args)
@@ -171,18 +158,18 @@ class TestSkillsList:
 
 class TestTemplateInit:
     def test_init_exits_zero(self, tmp_path: Path):
-        result = run_template("init", "django", cwd_arg=tmp_path)
+        result = run_template("django", cwd_arg=tmp_path)
         assert result.returncode == 0
 
     def test_init_creates_claude_md(self, tmp_path: Path):
-        run_template("init", "django", cwd_arg=tmp_path)
+        run_template("django", cwd_arg=tmp_path)
         assert (tmp_path / "backend" / "CLAUDE.md").exists()
 
     def test_init_skips_existing(self, tmp_path: Path):
         target = tmp_path / "backend"
         target.mkdir()
         (target / "CLAUDE.md").write_text("existing")
-        result = run_template("init", "django", cwd_arg=tmp_path)
+        result = run_template("django", cwd_arg=tmp_path)
         assert "skipped" in result.stdout
         assert (target / "CLAUDE.md").read_text() == "existing"
 
@@ -190,19 +177,19 @@ class TestTemplateInit:
         target = tmp_path / "backend"
         target.mkdir()
         (target / "CLAUDE.md").write_text("old")
-        result = run_template("init", "django", "--force", cwd_arg=tmp_path)
+        result = run_template("django", "--force", cwd_arg=tmp_path)
         assert result.returncode == 0
         assert (target / "CLAUDE.md").read_text() != "old"
 
     def test_init_custom_path(self, tmp_path: Path):
-        result = run_template("init", "django", "--path", "myapp", cwd_arg=tmp_path)
+        result = run_template("django", "--path", "myapp", cwd_arg=tmp_path)
         assert result.returncode == 0
         assert (tmp_path / "myapp" / "CLAUDE.md").exists()
 
     def test_init_unknown_template_fails(self, tmp_path: Path):
-        result = run_template("init", "nope", cwd_arg=tmp_path)
+        result = run_template("nope", cwd_arg=tmp_path)
         assert result.returncode != 0
-        assert "unknown template" in result.stdout
+        assert "nope" in result.stderr
 
 
 class TestTemplateList:
