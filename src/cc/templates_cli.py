@@ -1,4 +1,4 @@
-"""template CLI: copy CLAUDE.md templates into projects."""
+"""templates CLI: copy CLAUDE.md templates into projects."""
 
 import argparse
 from pathlib import Path
@@ -31,7 +31,7 @@ def cmd_init(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="template",
+        prog="templates",
         description="Copy CLAUDE.md templates into your project",
     )
     parser.add_argument("--cwd", metavar="DIR", help="target project directory (default: cwd)")
