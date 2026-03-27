@@ -1,4 +1,4 @@
-"""CLI integration tests: invoke skills as a subprocess against a temp dir."""
+"""CLI integration tests: invoke cc as a subprocess against a temp dir."""
 
 import os
 import subprocess
@@ -9,7 +9,19 @@ _SRC = str(Path(__file__).parent.parent / "src")
 
 
 def run_cli(*args: str, cwd_arg: Path | None = None, home: Path | None = None) -> subprocess.CompletedProcess:
-    cmd = [sys.executable, "-m", "skills.cli"]
+    cmd = [sys.executable, "-m", "cc.cli"]
+    if cwd_arg is not None:
+        cmd += ["--cwd", str(cwd_arg)]  # inserted before the subcommand group
+    cmd += list(args)
+    env = {**os.environ, "PYTHONPATH": _SRC}
+    if home is not None:
+        env["HOME"] = str(home)
+    return subprocess.run(cmd, capture_output=True, text=True, env=env)
+
+
+def run_skills(*args: str, cwd_arg: Path | None = None, home: Path | None = None) -> subprocess.CompletedProcess:
+    """Run: cc skills [--cwd DIR] <subcommand> [args]"""
+    cmd = [sys.executable, "-m", "cc.cli", "skills"]
     if cwd_arg is not None:
         cmd += ["--cwd", str(cwd_arg)]
     cmd += list(args)
@@ -19,17 +31,29 @@ def run_cli(*args: str, cwd_arg: Path | None = None, home: Path | None = None) -
     return subprocess.run(cmd, capture_output=True, text=True, env=env)
 
 
-class TestCLIInstall:
+def run_template(*args: str, cwd_arg: Path | None = None, home: Path | None = None) -> subprocess.CompletedProcess:
+    """Run: cc template [--cwd DIR] <subcommand> [args]"""
+    cmd = [sys.executable, "-m", "cc.cli", "template"]
+    if cwd_arg is not None:
+        cmd += ["--cwd", str(cwd_arg)]
+    cmd += list(args)
+    env = {**os.environ, "PYTHONPATH": _SRC}
+    if home is not None:
+        env["HOME"] = str(home)
+    return subprocess.run(cmd, capture_output=True, text=True, env=env)
+
+
+class TestSkillsInstall:
     def test_install_exits_zero(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        result = run_cli("install", cwd_arg=tmp_path, home=home)
+        result = run_skills("install", cwd_arg=tmp_path, home=home)
         assert result.returncode == 0
 
     def test_install_creates_user_skills(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        run_cli("install", cwd_arg=tmp_path, home=home)
+        run_skills("install", cwd_arg=tmp_path, home=home)
         skills_dir = home / ".claude" / "skills"
         assert skills_dir.is_dir()
         skill_dirs = [d for d in skills_dir.iterdir() if d.is_dir()]
@@ -40,39 +64,60 @@ class TestCLIInstall:
     def test_install_output_lists_skills(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        result = run_cli("install", cwd_arg=tmp_path, home=home)
+        result = run_skills("install", cwd_arg=tmp_path, home=home)
         assert "installed:" in result.stdout
 
     def test_install_idempotent(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        run_cli("install", cwd_arg=tmp_path, home=home)
-        result = run_cli("install", cwd_arg=tmp_path, home=home)
+        run_skills("install", cwd_arg=tmp_path, home=home)
+        result = run_skills("install", cwd_arg=tmp_path, home=home)
         assert result.returncode == 0
 
     def test_install_no_non_md_files(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        run_cli("install", cwd_arg=tmp_path, home=home)
+        run_skills("install", cwd_arg=tmp_path, home=home)
         skills_dir = home / ".claude" / "skills"
         for skill_dir in skills_dir.iterdir():
             for f in skill_dir.iterdir():
                 assert f.suffix == ".md", f"unexpected non-.md file: {f}"
 
+    def test_install_project_skill(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        result = run_skills("install", "tdd-backend", cwd_arg=tmp_path, home=home)
+        assert result.returncode == 0
+        assert (tmp_path / ".claude" / "skills" / "tdd-backend" / "SKILL.md").exists()
+        assert not (home / ".claude" / "skills" / "tdd-backend").exists()
 
-class TestCLIUninstall:
+    def test_install_user_skill_by_name(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        result = run_skills("install", "interrogate", cwd_arg=tmp_path, home=home)
+        assert result.returncode == 0
+        assert (home / ".claude" / "skills" / "interrogate" / "SKILL.md").exists()
+        assert not (tmp_path / ".claude" / "skills" / "interrogate").exists()
+
+    def test_install_unknown_skill_fails(self, tmp_path: Path):
+        result = run_skills("install", "no-such-skill", cwd_arg=tmp_path)
+        assert result.returncode != 0
+        assert "unknown skill" in result.stdout
+
+
+class TestSkillsUninstall:
     def test_uninstall_exits_zero_after_install(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        run_cli("install", cwd_arg=tmp_path, home=home)
-        result = run_cli("uninstall", cwd_arg=tmp_path, home=home)
+        run_skills("install", cwd_arg=tmp_path, home=home)
+        result = run_skills("uninstall", cwd_arg=tmp_path, home=home)
         assert result.returncode == 0
 
     def test_uninstall_removes_skills(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        run_cli("install", cwd_arg=tmp_path, home=home)
-        run_cli("uninstall", cwd_arg=tmp_path, home=home)
+        run_skills("install", cwd_arg=tmp_path, home=home)
+        run_skills("uninstall", cwd_arg=tmp_path, home=home)
         skills_dir = home / ".claude" / "skills"
         remaining = [d for d in skills_dir.iterdir() if d.is_dir()] if skills_dir.exists() else []
         assert remaining == []
@@ -80,68 +125,92 @@ class TestCLIUninstall:
     def test_uninstall_output_lists_skills(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        run_cli("install", cwd_arg=tmp_path, home=home)
-        result = run_cli("uninstall", cwd_arg=tmp_path, home=home)
+        run_skills("install", cwd_arg=tmp_path, home=home)
+        result = run_skills("uninstall", cwd_arg=tmp_path, home=home)
         assert "removed:" in result.stdout
 
     def test_uninstall_clean_dir_exits_zero(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        result = run_cli("uninstall", cwd_arg=tmp_path, home=home)
+        result = run_skills("uninstall", cwd_arg=tmp_path, home=home)
         assert result.returncode == 0
 
     def test_uninstall_clean_dir_output_has_skipped(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        result = run_cli("uninstall", cwd_arg=tmp_path, home=home)
+        result = run_skills("uninstall", cwd_arg=tmp_path, home=home)
         assert "skipped:" in result.stdout
-
-
-class TestCLIList:
-    def test_list_exits_zero(self):
-        result = run_cli("list")
-        assert result.returncode == 0
-
-    def test_list_shows_skills(self):
-        result = run_cli("list")
-        assert "interrogate" in result.stdout
-        assert "write-prd" in result.stdout
-
-
-class TestCLISelective:
-    def test_install_project_skill(self, tmp_path: Path):
-        home = tmp_path / "home"
-        home.mkdir()
-        result = run_cli("install", "tdd-backend", cwd_arg=tmp_path, home=home)
-        assert result.returncode == 0
-        assert (tmp_path / ".claude" / "skills" / "tdd-backend" / "SKILL.md").exists()
-        # Should NOT be in home
-        assert not (home / ".claude" / "skills" / "tdd-backend").exists()
-
-    def test_install_user_skill_by_name(self, tmp_path: Path):
-        home = tmp_path / "home"
-        home.mkdir()
-        result = run_cli("install", "interrogate", cwd_arg=tmp_path, home=home)
-        assert result.returncode == 0
-        assert (home / ".claude" / "skills" / "interrogate" / "SKILL.md").exists()
-        # Should NOT be in cwd
-        assert not (tmp_path / ".claude" / "skills" / "interrogate").exists()
-
-    def test_install_unknown_skill_fails(self, tmp_path: Path):
-        result = run_cli("install", "no-such-skill", cwd_arg=tmp_path)
-        assert result.returncode != 0
-        assert "unknown skill" in result.stdout
 
     def test_uninstall_project_skill(self, tmp_path: Path):
         home = tmp_path / "home"
         home.mkdir()
-        run_cli("install", "tdd-backend", cwd_arg=tmp_path, home=home)
-        result = run_cli("uninstall", "tdd-backend", cwd_arg=tmp_path, home=home)
+        run_skills("install", "tdd-backend", cwd_arg=tmp_path, home=home)
+        result = run_skills("uninstall", "tdd-backend", cwd_arg=tmp_path, home=home)
         assert result.returncode == 0
         assert "removed: tdd-backend" in result.stdout
         assert not (tmp_path / ".claude" / "skills" / "tdd-backend").exists()
 
     def test_uninstall_unknown_skill_fails(self, tmp_path: Path):
-        result = run_cli("uninstall", "no-such-skill", cwd_arg=tmp_path)
+        result = run_skills("uninstall", "no-such-skill", cwd_arg=tmp_path)
         assert result.returncode != 0
         assert "unknown skill" in result.stdout
+
+
+class TestSkillsList:
+    def test_list_exits_zero(self):
+        result = run_skills("list")
+        assert result.returncode == 0
+
+    def test_list_shows_skills_with_scope(self):
+        result = run_skills("list")
+        assert "interrogate" in result.stdout
+        assert "write-prd" in result.stdout
+        assert "(user)" in result.stdout
+        assert "(project)" in result.stdout
+
+
+class TestTemplateInit:
+    def test_init_exits_zero(self, tmp_path: Path):
+        result = run_template("init", "django", cwd_arg=tmp_path)
+        assert result.returncode == 0
+
+    def test_init_creates_claude_md(self, tmp_path: Path):
+        run_template("init", "django", cwd_arg=tmp_path)
+        assert (tmp_path / "backend" / "CLAUDE.md").exists()
+
+    def test_init_skips_existing(self, tmp_path: Path):
+        target = tmp_path / "backend"
+        target.mkdir()
+        (target / "CLAUDE.md").write_text("existing")
+        result = run_template("init", "django", cwd_arg=tmp_path)
+        assert "skipped" in result.stdout
+        assert (target / "CLAUDE.md").read_text() == "existing"
+
+    def test_init_force_overwrites(self, tmp_path: Path):
+        target = tmp_path / "backend"
+        target.mkdir()
+        (target / "CLAUDE.md").write_text("old")
+        result = run_template("init", "django", "--force", cwd_arg=tmp_path)
+        assert result.returncode == 0
+        assert (target / "CLAUDE.md").read_text() != "old"
+
+    def test_init_custom_path(self, tmp_path: Path):
+        result = run_template("init", "django", "--path", "myapp", cwd_arg=tmp_path)
+        assert result.returncode == 0
+        assert (tmp_path / "myapp" / "CLAUDE.md").exists()
+
+    def test_init_unknown_template_fails(self, tmp_path: Path):
+        result = run_template("init", "nope", cwd_arg=tmp_path)
+        assert result.returncode != 0
+        assert "unknown template" in result.stdout
+
+
+class TestTemplateList:
+    def test_list_exits_zero(self):
+        result = run_template("list")
+        assert result.returncode == 0
+
+    def test_list_shows_django(self):
+        result = run_template("list")
+        assert "django" in result.stdout
+        assert "backend" in result.stdout

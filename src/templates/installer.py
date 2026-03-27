@@ -3,29 +3,43 @@
 import shutil
 from pathlib import Path
 
-# Default target paths relative to cwd for each template.
-DEFAULT_PATHS: dict[str, str] = {
-    "django": "backend",
-}
-
 
 def _templates_root() -> Path:
     """Return the directory containing all template folders (the package dir)."""
     return Path(__file__).parent
 
 
+def parse_template_meta(template_dir: Path) -> dict[str, str]:
+    """Read TEMPLATE.md frontmatter and return metadata as a dict."""
+    template_md = template_dir / "TEMPLATE.md"
+    if not template_md.exists():
+        return {}
+    text = template_md.read_text()
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return {}
+    meta = {}
+    for line in lines[1:]:
+        if line.strip() == "---":
+            break
+        if ":" in line:
+            key, _, val = line.partition(":")
+            meta[key.strip()] = val.strip()
+    return meta
+
+
 def discover_templates(templates_root: Path) -> list[Path]:
-    """Return all template dirs (top-level dirs containing CLAUDE.md)."""
+    """Return all template dirs (top-level dirs containing TEMPLATE.md and CLAUDE.md)."""
     return sorted(
         d for d in templates_root.iterdir()
-        if d.is_dir() and (d / "CLAUDE.md").exists()
+        if d.is_dir() and (d / "TEMPLATE.md").exists() and (d / "CLAUDE.md").exists()
     )
 
 
 def list_templates() -> list[tuple[str, str]]:
     """Return (name, default_path) for all available templates."""
     return [
-        (d.name, DEFAULT_PATHS.get(d.name, d.name))
+        (d.name, parse_template_meta(d).get("default_path", d.name))
         for d in discover_templates(_templates_root())
     ]
 
@@ -45,7 +59,9 @@ def init(cwd: Path, name: str, path: str | None = None, force: bool = False) -> 
         available = ", ".join(sorted(known))
         raise ValueError(f"unknown template: {name}. available: {available}")
 
-    target_dir = cwd / (path or DEFAULT_PATHS.get(name, name))
+    meta = parse_template_meta(known[name])
+    default_path = meta.get("default_path", name)
+    target_dir = cwd / (path or default_path)
     dest = target_dir / "CLAUDE.md"
     src = known[name] / "CLAUDE.md"
 

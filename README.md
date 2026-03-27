@@ -10,13 +10,20 @@ Bootstrap Claude Code, configure PATH, and create a default `~/.claude/CLAUDE.md
 curl -fsSL https://raw.githubusercontent.com/wazzzy/cc/main/setup.sh | bash
 ```
 
-## Install skills
+## Install
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc skills install
+uvx --from git+https://github.com/wazzzy/cc cc skills install
 ```
 
 ## Usage
+
+All commands use the unified `cc` CLI:
+
+```
+cc skills <install|uninstall|list> [--cwd DIR] [SKILL...]
+cc template <init|list> [--cwd DIR] [args]
+```
 
 ### skills
 
@@ -25,19 +32,19 @@ uvx --from git+https://github.com/wazzzy/cc skills install
 Bare install copies user-scoped skills to `~/.claude/skills/`:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc skills install
+uvx --from git+https://github.com/wazzzy/cc cc skills install
 ```
 
-Install project-scoped skills (e.g. tdd-backend) to `.claude/skills/` in cwd:
+Install a project-scoped skill to `.claude/skills/` in cwd:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc skills install tdd-backend
+uvx --from git+https://github.com/wazzzy/cc cc skills install tdd-backend
 ```
 
 #### List
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc skills list
+uvx --from git+https://github.com/wazzzy/cc cc skills list
 ```
 
 ```
@@ -54,23 +61,21 @@ uvx --from git+https://github.com/wazzzy/cc skills list
 Bare uninstall removes user-scoped skills from `~/.claude/skills/`:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc skills uninstall
+uvx --from git+https://github.com/wazzzy/cc cc skills uninstall
 ```
 
 Named uninstall routes by scope:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc skills uninstall tdd-backend
+uvx --from git+https://github.com/wazzzy/cc cc skills uninstall tdd-backend
 ```
 
-### claude-md
+### template
 
-Copy CLAUDE.md templates into your project.
-
-#### List templates
+#### List
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc claude-md list
+uvx --from git+https://github.com/wazzzy/cc cc template list
 ```
 
 ```
@@ -79,22 +84,22 @@ uvx --from git+https://github.com/wazzzy/cc claude-md list
 
 #### Init
 
-Copy Django CLAUDE.md into `./backend/`:
+Copy the Django CLAUDE.md into `./backend/`:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc claude-md init django
+uvx --from git+https://github.com/wazzzy/cc cc template init django
 ```
 
 Custom target path:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc claude-md init django --path ./my-app
+uvx --from git+https://github.com/wazzzy/cc cc template init django --path ./my-app
 ```
 
 Overwrite existing:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc claude-md init django --force
+uvx --from git+https://github.com/wazzzy/cc cc template init django --force
 ```
 
 ## Skills

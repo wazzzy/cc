@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 import templates.installer as _mod
-from templates.installer import init, list_templates, discover_templates, _templates_root
+from templates.installer import init, list_templates, discover_templates, parse_template_meta, _templates_root
 
 
 def test_templates_bundled_in_package():
@@ -16,13 +16,21 @@ def test_templates_bundled_in_package():
     assert len(found) > 0, "no templates found inside package dir"
 
 
+def _make_template(root: Path, name: str, default_path: str | None = None) -> Path:
+    """Helper: create a fake template dir with TEMPLATE.md and CLAUDE.md."""
+    tpl = root / name
+    tpl.mkdir()
+    dp = default_path or name
+    (tpl / "TEMPLATE.md").write_text(f"---\nname: {name}\ndefault_path: {dp}\n---\n")
+    (tpl / "CLAUDE.md").write_text(f"# {name.capitalize()} template")
+    return tpl
+
+
 @pytest.fixture()
 def fake_templates_root(tmp_path: Path) -> Path:
     """Create a fake templates root with one template."""
-    tpl = tmp_path / "django"
-    tpl.mkdir()
-    (tpl / "CLAUDE.md").write_text("# Django template")
-    # Dir without CLAUDE.md — should be ignored
+    _make_template(tmp_path, "django", default_path="backend")
+    # Dir without TEMPLATE.md — should be ignored
     other = tmp_path / "not-a-template"
     other.mkdir()
     (other / "readme.md").write_text("not a template")
@@ -31,6 +39,27 @@ def fake_templates_root(tmp_path: Path) -> Path:
 
 def _patch_root(fake_root: Path):
     return patch("templates.installer._templates_root", return_value=fake_root)
+
+
+class TestParseTemplateMeta:
+    def test_reads_default_path(self, tmp_path: Path):
+        d = _make_template(tmp_path, "django", default_path="backend")
+        assert parse_template_meta(d)["default_path"] == "backend"
+
+    def test_reads_name(self, tmp_path: Path):
+        d = _make_template(tmp_path, "django", default_path="backend")
+        assert parse_template_meta(d)["name"] == "django"
+
+    def test_missing_template_md_returns_empty(self, tmp_path: Path):
+        d = tmp_path / "s"
+        d.mkdir()
+        assert parse_template_meta(d) == {}
+
+    def test_no_frontmatter_returns_empty(self, tmp_path: Path):
+        d = tmp_path / "s"
+        d.mkdir()
+        (d / "TEMPLATE.md").write_text("no frontmatter here")
+        assert parse_template_meta(d) == {}
 
 
 class TestListTemplates:
