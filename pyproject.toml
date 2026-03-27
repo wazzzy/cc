@@ -11,7 +11,7 @@ dependencies = []
 
 [project.scripts]
 skills = "cc.skills_cli:main"
-template = "cc.template_cli:main"
+templates = "cc.templates_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

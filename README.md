@@ -55,12 +55,12 @@ Named uninstall routes by scope:
 uvx --from git+https://github.com/wazzzy/cc skills uninstall tdd-backend
 ```
 
-### template
+### templates
 
 #### List
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc template list
+uvx --from git+https://github.com/wazzzy/cc templates list
 ```
 
 ```
@@ -72,19 +72,19 @@ uvx --from git+https://github.com/wazzzy/cc template list
 Copy the Django CLAUDE.md into `./backend/`:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc template django
+uvx --from git+https://github.com/wazzzy/cc templates django
 ```
 
 Custom target path:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc template django --path ./my-app
+uvx --from git+https://github.com/wazzzy/cc templates django --path ./my-app
 ```
 
 Overwrite existing:
 
 ```sh
-uvx --from git+https://github.com/wazzzy/cc template django --force
+uvx --from git+https://github.com/wazzzy/cc templates django --force
 ```
 
 ## Skills

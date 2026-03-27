@@ -1,4 +1,4 @@
-"""Tests for the template installer (claude-md init behaviour)."""
+"""Tests for the templates installer (claude-md init behaviour)."""
 
 from pathlib import Path
 from unittest.mock import patch

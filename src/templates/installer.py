@@ -1,4 +1,4 @@
-"""Template installer: copies CLAUDE.md templates into target directories."""
+"""Templates installer: copies CLAUDE.md templates into target directories."""
 
 import shutil
 from pathlib import Path
