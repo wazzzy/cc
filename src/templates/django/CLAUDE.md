@@ -59,7 +59,9 @@ Complex logic must move to services.
 
 7. Folder Structure
 
-Follow the standard Django app layout under `backend/apps/`. The apps listed below are examples, NOT an exhaustive list. Create new apps when needed.
+Follow the standard Django app layout under `backend/apps/`.
+
+Refer [django-directory-structure.md](django-directory-structure.md) for the base pattern. The apps listed there are examples, NOT an exhaustive list. Create new apps when needed.
 
 8. Creating New Django Apps
 
