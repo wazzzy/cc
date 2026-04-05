@@ -70,7 +70,7 @@ Create a new app when the feature has its own models not closely related to exis
 /`, `migrations/`
   2. Register in `config/settings/base.py` → `SHARED_APPS` or `TENANT_APPS` based on whether data is per-tenant or global (refer django-tenants docs)
   3. Wire URLs in `config/urls.py` under `api/v1/<app_name>/`
-  4. Run migrations: `uv run python manage.py makemigrations` then `uv run python manage.py migrate`
+  4. Run migrations: `uv run manage.py makemigrations` then `uv run manage.py migrate_schemas`
 
 9. Quality Rules
 
@@ -85,11 +85,14 @@ Create a new app when the feature has its own models not closely related to exis
   - mix business logic with controllers
   - skip tests
 
-10. After Model Changes
+10. On Model Changes
 
-Always run:
-- `uv run python manage.py makemigrations`
-- `uv run python manage.py migrate`
+# 1. Change models
+# 2. Create migrations
+- uv run manage.py makemigrations
+
+# 3. Apply everywhere
+- uv run manage.py migrate_schemas
 
 11. Performance Rules
 
@@ -116,7 +119,42 @@ Claude must never manually edit migration files, but may generate them via `make
 
 - Backend:
   - uv run pytest
-  - uv run python manage.py runserver
+  - uv run manage.py runserver 0:8000
+
+
+# Testing Protocol
+Always follow this 3-phase strategy before declaring tests pass or fail.
+Always run in order. Never skip phases.
+
+1. **Smoke:** `uv run pytest -x -q --tb=no`
+   - Pass → DONE ✓
+   - Fail → go to step 2
+
+2. **Isolate:** `uv run pytest --tb=line -q | grep FAILED` → run each node individually:
+   `uv run pytest <node_id> -v --tb=short -s`
+   **One at a time**, never batched. Report each before moving on.
+   If still failing → continue debugging in step 2
+   After fixes: `uv run pytest --lf -v --tb=short` → if clean, go to step 3
+
+3. **Full:** `uv run pytest -v --tb=short`
+   Confirms fixes didn't break previously passing tests.
+   Only mark complete after this passes.
+
+This is the full suite run. Only report overall success once this passes cleanly.
+
+## Quick Flag Reference
+
+| Flag | Purpose |
+|------|---------|
+| `-x` | Stop on first failure |
+| `-q` | Quiet output |
+| `-v` | Verbose (show each test name) |
+| `-s` | Show stdout / print output |
+| `--tb=no/line/short/long` | Traceback verbosity |
+| `--lf` | Re-run only last failed tests |
+| `--ff` | Run failed tests first, then rest |
+| `-k "name"` | Filter tests by name/keyword |
+| `--co` | Dry-run: collect and list tests only |
 
 # Important Rule
 

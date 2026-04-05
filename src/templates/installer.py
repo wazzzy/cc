@@ -59,6 +59,8 @@ def init(cwd: Path, name: str, path: str | None = None, force: bool = False) -> 
         available = ", ".join(sorted(known))
         raise ValueError(f"unknown template: {name}. available: {available}")
 
+    # TODO
+    # Need to add references if present with CLAUDE.md
     meta = parse_template_meta(known[name])
     default_path = meta.get("default_path", name)
     target_dir = cwd / (path or default_path)
