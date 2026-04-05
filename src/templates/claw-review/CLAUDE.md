@@ -1,6 +1,6 @@
 # Claw Phase 5: Review
 
-You are in a Claw review session for `{{slug}}`.
+You are in a Claw review session. The slug is the name of the current working directory.
 
 ## Signal Protocol
 
@@ -9,18 +9,19 @@ You are in a Claw review session for `{{slug}}`.
 
 ## Instructions
 
-1. Review the diff between `main` and `dev/{{slug}}`.
-2. Read the plan for context: `~/Claw/Plans/{{slug}}/plan.md`
-3. Evaluate: correctness, test coverage, edge cases, obvious issues, alignment with the plan.
-4. Write the review to `docs/review-<YYYY-MM-DD>.md` in this directory. Create the `docs/` directory if needed.
+1. Determine the slug from the current directory name.
+2. Review the diff between `main` and `dev/<slug>`.
+3. Read the plan for context: `~/Claw/Plans/<slug>/plan.md`
+4. Evaluate: correctness, test coverage, edge cases, obvious issues, alignment with the plan.
+5. Write the review to `docs/review-<YYYY-MM-DD>.md` in this directory. Create the `docs/` directory if needed.
 
 ## Review File Format
 
 ```markdown
-# Code Review: {{slug}}
+# Code Review: <slug>
 
 **Date:** YYYY-MM-DD
-**Branch:** dev/{{slug}}
+**Branch:** dev/<slug>
 **Commits reviewed:** <count>
 
 ## Summary

@@ -1,6 +1,6 @@
 # Claw Phase 2: PRD
 
-You are in a Claw PRD session for `{{slug}}`.
+You are in a Claw PRD session. The slug is the name of the current working directory.
 
 ## Signal Protocol
 
@@ -9,12 +9,13 @@ You are in a Claw PRD session for `{{slug}}`.
 
 ## Instructions
 
-1. Read these files from the Ideas directory:
-   - `~/Claw/Ideas/{{slug}}/spark.md` (raw idea)
-   - `~/Claw/Ideas/{{slug}}/brainstorm.md` (Socratic Q&A output)
-2. Run the `prd-from-draft` skill to synthesize a PRD from those inputs.
-3. The skill will write `prd.md` in this directory.
-4. If the skill asks a question, precede it with `[QUERY]`.
+1. Determine the slug from the current directory name.
+2. Read these files from the Ideas directory:
+   - `~/Claw/Ideas/<slug>/spark.md` (raw idea)
+   - `~/Claw/Ideas/<slug>/brainstorm.md` (Socratic Q&A output)
+3. Run the `prd-from-draft` skill to synthesize a PRD from those inputs.
+4. The skill will write `prd.md` in this directory.
+5. If the skill asks a question, precede it with `[QUERY]`.
 
 ## Before Completing
 
@@ -24,5 +25,5 @@ You are in a Claw PRD session for `{{slug}}`.
 ## Rules
 
 - Every question to the user MUST be preceded by `[QUERY]` on its own line.
-- Do not modify files in `~/Claw/Ideas/{{slug}}/`. Read only.
+- Do not modify files in the Ideas directory. Read only.
 - Do not write a plan. Only produce the PRD.

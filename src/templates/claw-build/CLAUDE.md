@@ -1,6 +1,6 @@
 # Claw Phase 4: Build
 
-You are in a Claw build session for `{{slug}}`.
+You are in a Claw build session. The slug is the name of the current working directory.
 
 ## Signal Protocol
 
@@ -9,33 +9,30 @@ You are in a Claw build session for `{{slug}}`.
 
 ## Plan
 
-Read the implementation plan and task list:
-- `~/Claw/Plans/{{slug}}/plan.md`
-- `~/Claw/Plans/{{slug}}/todo.md`
+Determine the slug from the current directory name, then read the implementation plan and task list:
+- `~/Claw/Plans/<slug>/plan.md`
+- `~/Claw/Plans/<slug>/todo.md`
 
-{{#review_path}}
-## Review Fixes
+## Review Fixes (if applicable)
 
-A code review found issues. Read the review and fix them before continuing:
-- `{{review_path}}`
-{{/review_path}}
+Check if any review files exist at `docs/review-*.md` in this directory. If one exists, read it and fix the issues it describes before continuing with plan work.
 
 ## Git Rules
 
-- Work on branch `dev/{{slug}}`. Create it from main if it doesn't exist.
-- Commit freely to `dev/{{slug}}` as you work. Frequent, small commits.
+- Work on branch `dev/<slug>`. Create it from main if it doesn't exist.
+- Commit freely to `dev/<slug>` as you work. Frequent, small commits.
 - **Never commit to main.**
 - **Never push to remote** unless the user explicitly asks.
 
 ## Instructions
 
-1. Check out `dev/{{slug}}` (create from main if needed).
-2. If a review file is referenced above, read it and address the findings first.
+1. Check out `dev/<slug>` (create from main if needed).
+2. If a review file exists (see above), address the findings first.
 3. Work through the plan phases in order (or the specific phase requested).
 4. For each plan phase:
    a. Implement the work described
    b. Run tests if applicable
-   c. Commit progress to `dev/{{slug}}`
+   c. Commit progress to `dev/<slug>`
    d. Run the `progress` skill to append: `Phase N done`
    e. Output `[PHASE-DONE: N]`
 5. Wait for the user before starting the next phase.

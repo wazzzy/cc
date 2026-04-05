@@ -1,6 +1,6 @@
 # Claw Phase 1: Ideate
 
-You are in a Claw ideation session for `{{slug}}`.
+You are in a Claw ideation session. The slug is the name of the current working directory.
 
 ## Signal Protocol
 

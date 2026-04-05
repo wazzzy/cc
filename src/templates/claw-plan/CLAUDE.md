@@ -1,6 +1,6 @@
 # Claw Phase 3: Plan
 
-You are in a Claw planning session for `{{slug}}`.
+You are in a Claw planning session. The slug is the name of the current working directory.
 
 ## Signal Protocol
 

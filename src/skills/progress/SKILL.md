@@ -1,6 +1,6 @@
 ---
 name: progress
-scope: project
+scope: user
 description: Append a timestamped milestone entry to progress.md. Use when a phase completes, a significant milestone is reached, or you need to log progress. Format is append-only with timestamps.
 ---
 
