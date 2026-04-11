@@ -25,10 +25,11 @@ def cmd_install(args: argparse.Namespace) -> None:
 def cmd_uninstall(args: argparse.Namespace) -> None:
     cwd = Path(args.cwd) if args.cwd else Path.cwd()
     names = args.skills or None
+    target = "pi" if args.pi else "claude"
     if args.cwd and names is None:
         print("warning: --cwd has no effect on user-level skills")
     try:
-        results = uninstall(cwd, names)
+        results = uninstall(cwd, names, target=target)
     except ValueError as e:
         print(f"error: {e}")
         raise SystemExit(1)
@@ -64,6 +65,7 @@ def main() -> None:
 
     uninstall_p = subparsers.add_parser("uninstall", help="Uninstall skills")
     uninstall_p.add_argument("skills", nargs="*", metavar="SKILL")
+    uninstall_p.add_argument("--pi", action="store_true", help="Uninstall from pi skills directory")
     uninstall_p.set_defaults(func=cmd_uninstall)
 
     list_p = subparsers.add_parser("list", help="List available skills")

@@ -189,6 +189,15 @@ class TestSkillsInstallPi:
         assert not (home / ".claude" / "skills").exists()
 
 
+class TestSkillsUninstallPi:
+    def test_pi_uninstall_exits_zero(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        run_skills("install", "--pi", cwd_arg=tmp_path, home=home)
+        result = run_skills("uninstall", "--pi", cwd_arg=tmp_path, home=home)
+        assert result.returncode == 0
+
+
 class TestTemplateInit:
     def test_init_exits_zero(self, tmp_path: Path):
         result = run_templates("django", cwd_arg=tmp_path)
