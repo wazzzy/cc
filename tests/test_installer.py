@@ -185,6 +185,52 @@ class TestInstallPi:
             install(cwd, ["skill-proj"], target="pi")
         assert (cwd / ".pi" / "skills" / "skill-proj" / "SKILL.md").exists()
 
+    def test_bare_install_only_user_scope(self, fake_skills_root: Path, tmp_path: Path):
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            result = install(cwd, target="pi")
+        names = [n for n, _, _ in result]
+        assert "skill-user-a" in names
+        assert "skill-user-b" in names
+        assert "skill-proj" not in names
+
+    def test_copies_md_files(self, fake_skills_root: Path, tmp_path: Path):
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            install(tmp_path, target="pi")
+        assert (fake_home / ".pi" / "agent" / "skills" / "skill-user-a" / "guide.md").exists()
+
+    def test_skips_non_md_files(self, fake_skills_root: Path, tmp_path: Path):
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            install(tmp_path, target="pi")
+        assert not (fake_home / ".pi" / "agent" / "skills" / "skill-user-a" / "not-markdown.txt").exists()
+
+    def test_skips_hidden_files(self, fake_skills_root: Path, tmp_path: Path):
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            install(tmp_path, target="pi")
+        assert not (fake_home / ".pi" / "agent" / "skills" / "skill-user-a" / ".hidden.md").exists()
+
+    def test_idempotent(self, fake_skills_root: Path, tmp_path: Path):
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            install(tmp_path, target="pi")
+            install(tmp_path, target="pi")
+        assert (fake_home / ".pi" / "agent" / "skills" / "skill-user-a" / "SKILL.md").exists()
+
+    def test_install_unknown_raises(self, fake_skills_root: Path, tmp_path: Path):
+        with _patch_root(fake_skills_root):
+            with pytest.raises(ValueError, match="unknown skill"):
+                install(tmp_path, ["nope"], target="pi")
+
 
 class TestUninstall:
     def test_bare_uninstall_only_user_scope(self, fake_skills_root: Path, tmp_path: Path):
