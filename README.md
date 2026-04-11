@@ -28,6 +28,13 @@ Install a project-scoped skill to `.claude/skills/` in cwd:
 uvx --from git+https://github.com/wazzzy/cc skills install tdd-backend
 ```
 
+Install into [pi](https://github.com/mariozechner/pi) instead of Claude Code (user-scoped → `~/.pi/agent/skills/`, project-scoped → `.pi/skills/`):
+
+```sh
+uvx --from git+https://github.com/wazzzy/cc skills install --pi
+uvx --from git+https://github.com/wazzzy/cc skills install tdd-backend --pi
+```
+
 #### List
 
 ```sh
@@ -53,6 +60,13 @@ Named uninstall routes by scope:
 
 ```sh
 uvx --from git+https://github.com/wazzzy/cc skills uninstall tdd-backend
+```
+
+Uninstall from pi directories:
+
+```sh
+uvx --from git+https://github.com/wazzzy/cc skills uninstall --pi
+uvx --from git+https://github.com/wazzzy/cc skills uninstall tdd-backend --pi
 ```
 
 ### templates

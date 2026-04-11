@@ -5,7 +5,6 @@ Backend:
 - Python (uv package manager)
 - Django 5.2
 - Django REST Framework, django-filter
-- Django Tenants
 - Celery
 
 Database:
@@ -69,9 +68,8 @@ Create a new app when the feature has its own models not closely related to exis
 
 - **Steps:**
   1. Create `backend/apps/<app_name>/` with: `__init__.py`, `apps.py`, `models.py`, `serializers.py`, `views.py`, `urls.py`, `services.py`, `admin.py`, `tests/`, `migrations/`
-  2. Register in `config/settings/base.py` → `SHARED_APPS` or `TENANT_APPS` based on whether data is per-tenant or global (refer django-tenants docs)
-  3. Wire URLs in `config/urls.py` under `api/v1/<app_name>/`
-  4. Run migrations: `uv run python manage.py makemigrations` then `uv run python manage.py migrate`
+  2. Wire URLs in `config/urls.py` under `api/v1/<app_name>/`
+  3. Run migrations: `uv run python manage.py makemigrations` then `uv run python manage.py migrate`
 
 9. Quality Rules
 
@@ -89,8 +87,8 @@ Create a new app when the feature has its own models not closely related to exis
 10. After Model Changes
 
 Always run:
-- `uv run python manage.py makemigrations`
-- `uv run python manage.py migrate`
+- `uv run manage.py makemigrations`
+- `uv run manage.py migrate`
 
 11. Performance Rules
 

@@ -115,13 +115,13 @@ Claude must never manually edit migration files, but may generate them via `make
 
 - Backend:
   - uv run pytest
-  - uv run python manage.py runserver
+  - uv run python runserver
 
 # Important Rule
 
 Claude must always:
 
-1. Read PRD
+1. Read PRD/Plan
 2. Write tests
 3. Implement minimal code
 4. Pass tests

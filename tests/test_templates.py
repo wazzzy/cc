@@ -131,3 +131,14 @@ class TestInit:
             init(cwd, "django")
             status, _ = init(cwd, "django", force=True)
         assert status == "overwritten"
+
+    def test_default_path_dot_installs_to_cwd(self, fake_templates_root: Path, tmp_path: Path):
+        """A template with default_path='.' should place CLAUDE.md directly in cwd, not a subdirectory."""
+        _make_template(fake_templates_root, "repo", default_path=".")
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_templates_root):
+            status, dest = init(cwd, "repo")
+        assert status == "created"
+        assert dest == cwd / "CLAUDE.md"
+        assert dest.exists()
