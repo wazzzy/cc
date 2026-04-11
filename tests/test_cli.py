@@ -163,6 +163,31 @@ class TestSkillsInstallPi:
         result = run_skills("install", "--pi", cwd_arg=tmp_path, home=home)
         assert result.returncode == 0
 
+    def test_pi_install_creates_user_skills_in_pi_dir(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        run_skills("install", "--pi", cwd_arg=tmp_path, home=home)
+        skills_dir = home / ".pi" / "agent" / "skills"
+        assert skills_dir.is_dir()
+        skill_dirs = [d for d in skills_dir.iterdir() if d.is_dir()]
+        assert len(skill_dirs) > 0
+        for skill_dir in skill_dirs:
+            assert (skill_dir / "SKILL.md").exists()
+
+    def test_pi_install_project_skill(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        result = run_skills("install", "--pi", "tdd-backend", cwd_arg=tmp_path, home=home)
+        assert result.returncode == 0
+        assert (tmp_path / ".pi" / "skills" / "tdd-backend" / "SKILL.md").exists()
+        assert not (home / ".pi" / "agent" / "skills" / "tdd-backend").exists()
+
+    def test_pi_install_does_not_touch_claude_dir(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        run_skills("install", "--pi", cwd_arg=tmp_path, home=home)
+        assert not (home / ".claude" / "skills").exists()
+
 
 class TestTemplateInit:
     def test_init_exits_zero(self, tmp_path: Path):
