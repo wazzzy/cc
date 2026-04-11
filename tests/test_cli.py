@@ -197,6 +197,22 @@ class TestSkillsUninstallPi:
         result = run_skills("uninstall", "--pi", cwd_arg=tmp_path, home=home)
         assert result.returncode == 0
 
+    def test_pi_uninstall_removes_skills(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        run_skills("install", "--pi", cwd_arg=tmp_path, home=home)
+        run_skills("uninstall", "--pi", cwd_arg=tmp_path, home=home)
+        skills_dir = home / ".pi" / "agent" / "skills"
+        remaining = [d for d in skills_dir.iterdir() if d.is_dir()] if skills_dir.exists() else []
+        assert remaining == []
+
+    def test_pi_uninstall_clean_dir_has_skipped(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        result = run_skills("uninstall", "--pi", cwd_arg=tmp_path, home=home)
+        assert result.returncode == 0
+        assert "skipped" in result.stdout
+
 
 class TestTemplateInit:
     def test_init_exits_zero(self, tmp_path: Path):
