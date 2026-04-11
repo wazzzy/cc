@@ -246,6 +246,32 @@ class TestUninstallPi:
         assert "skill-user-b" in results
         assert "skill-proj" not in results
 
+    def test_removes_user_skill_from_pi_agent_dir(self, fake_skills_root: Path, tmp_path: Path):
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            install(tmp_path, target="pi")
+            uninstall(tmp_path, target="pi")
+        assert not (fake_home / ".pi" / "agent" / "skills" / "skill-user-a").exists()
+
+    def test_removes_project_skill_from_pi_skills_dir(self, fake_skills_root: Path, tmp_path: Path):
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            install(cwd, ["skill-proj"], target="pi")
+            results = uninstall(cwd, ["skill-proj"], target="pi")
+        assert results["skill-proj"] == ("removed", "project")
+        assert not (cwd / ".pi" / "skills" / "skill-proj").exists()
+
+    def test_noop_when_not_installed(self, fake_skills_root: Path, tmp_path: Path):
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            results = uninstall(tmp_path, target="pi")
+        assert results["skill-user-a"] == ("skipped", "user")
+
 
 class TestUninstall:
     def test_bare_uninstall_only_user_scope(self, fake_skills_root: Path, tmp_path: Path):
