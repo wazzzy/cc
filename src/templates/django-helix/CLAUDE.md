@@ -87,8 +87,8 @@ Create a new app when the feature has its own models not closely related to exis
 10. After Model Changes
 
 Always run:
-- `uv run python manage.py makemigrations`
-- `uv run python manage.py migrate`
+- `uv run manage.py makemigrations`
+- `uv run manage.py migrate`
 
 11. Performance Rules
 
@@ -117,6 +117,81 @@ Claude must never manually edit migration files, but may generate them via `make
   - uv run pytest
   - uv run python runserver
 
+# Testing Protocol
+
+Claude must always follow this 3-phase strategy before declaring tests pass or fail. Never skip phases.
+
+## Phase 1 — Smoke Check (always run first)
+
+```bash
+uv run pytest -x -q --tb=no
+```
+
+- `-x` stops at the first failure immediately
+- `-q` keeps output minimal
+- `--tb=no` suppresses tracebacks — only pass/fail signal matters here
+
+**Decision:**
+- All pass → proceed to Phase 3
+- Any fail → proceed to Phase 2
+
+## Phase 2 — Isolate & Debug Failures (only if Phase 1 fails)
+
+First, collect all failing test node IDs:
+
+```bash
+uv run pytest --tb=line -q 2>&1 | grep "FAILED"
+```
+
+This outputs node IDs like:
+```
+tests/test_auth.py::test_login_invalid
+tests/test_db.py::test_connection_timeout
+```
+
+Then run each failing test **one at a time**, never batched:
+
+```bash
+uv run pytest <failed_test_node_id> -v --tb=short -s
+```
+
+- `-v` shows the full test name
+- `--tb=short` gives a concise traceback
+- `-s` disables output capture so print statements are visible
+
+Report the result of each test before moving to the next. Do not batch failures together.
+
+**After fixing**, use `--lf` to re-run only the previously failed tests:
+
+```bash
+uv run pytest --lf -v --tb=short
+```
+
+- If all previously failed tests now pass → proceed to Phase 3
+- If still failing → continue debugging in Phase 2
+
+## Phase 3 — Comprehensive Run (only if Phase 1 or Phase 2 fully passes)
+
+```bash
+uv run pytest -v --tb=short
+```
+
+This is the full suite run. Only report overall success once this passes cleanly.
+
+## Quick Flag Reference
+
+| Flag | Purpose |
+|------|---------|
+| `-x` | Stop on first failure |
+| `-q` | Quiet output |
+| `-v` | Verbose (show each test name) |
+| `-s` | Show stdout / print output |
+| `--tb=no/line/short/long` | Traceback verbosity |
+| `--lf` | Re-run only last failed tests |
+| `--ff` | Run failed tests first, then rest |
+| `-k "name"` | Filter tests by name/keyword |
+| `--co` | Dry-run: collect and list tests only |
+
 # Important Rule
 
 Claude must always:
@@ -124,5 +199,8 @@ Claude must always:
 1. Read PRD/Plan
 2. Write tests
 3. Implement minimal code
-4. Pass tests
-5. Log changes
+4. Run Phase 1 smoke check (`uv run pytest -x -q --tb=no`)
+5. If smoke check fails → run Phase 2 (isolate failures one by one)
+6. If smoke check passes → run Phase 3 (comprehensive run)
+7. Only mark work complete after Phase 3 passes
+8. Log changes
