@@ -156,6 +156,14 @@ class TestSkillsList:
         assert "(project)" in result.stdout
 
 
+class TestSkillsInstallPi:
+    def test_pi_install_exits_zero(self, tmp_path: Path):
+        home = tmp_path / "home"
+        home.mkdir()
+        result = run_skills("install", "--pi", cwd_arg=tmp_path, home=home)
+        assert result.returncode == 0
+
+
 class TestTemplateInit:
     def test_init_exits_zero(self, tmp_path: Path):
         result = run_templates("django", cwd_arg=tmp_path)

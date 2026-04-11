@@ -9,10 +9,11 @@ from skills.installer import install, list_skills, uninstall
 def cmd_install(args: argparse.Namespace) -> None:
     cwd = Path(args.cwd) if args.cwd else Path.cwd()
     names = args.skills or None
+    target = "pi" if args.pi else "claude"
     if args.cwd and names is None:
         print("warning: --cwd has no effect on user-level skills")
     try:
-        results = install(cwd, names)
+        results = install(cwd, names, target=target)
     except ValueError as e:
         print(f"error: {e}")
         raise SystemExit(1)
@@ -58,6 +59,7 @@ def main() -> None:
 
     install_p = subparsers.add_parser("install", help="Install skills (user-scoped by default)")
     install_p.add_argument("skills", nargs="*", metavar="SKILL")
+    install_p.add_argument("--pi", action="store_true", help="Install into pi skills directory")
     install_p.set_defaults(func=cmd_install)
 
     uninstall_p = subparsers.add_parser("uninstall", help="Uninstall skills")
