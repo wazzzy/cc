@@ -92,12 +92,14 @@ def install(cwd: Path, names: list[str] | None = None, target: str = "claude") -
     return installed
 
 
-def uninstall(cwd: Path, names: list[str] | None = None) -> dict[str, tuple[str, str]]:
+def uninstall(cwd: Path, names: list[str] | None = None, target: str = "claude") -> dict[str, tuple[str, str]]:
     """
-    Remove skill dirs from user or project .claude/skills/.
+    Remove skill dirs from user or project skills directory.
 
     Bare uninstall (names=None) only removes scope:user skills.
     Named uninstall routes each skill by its scope.
+    target="claude" removes from .claude/skills/ (default).
+    target="pi" removes from .pi/skills/ or ~/.pi/agent/skills/.
     Returns dict of skill_name -> (status, scope).
     Raises ValueError for unknown names.
     """
@@ -117,7 +119,7 @@ def uninstall(cwd: Path, names: list[str] | None = None) -> dict[str, tuple[str,
 
     for skill_dir in skills:
         scope = parse_scope(skill_dir)
-        dest = _dest_path(cwd, skill_dir.name, scope)
+        dest = _dest_path(cwd, skill_dir.name, scope, target)
         if dest.exists():
             shutil.rmtree(dest)
             results[skill_dir.name] = ("removed", scope)

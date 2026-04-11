@@ -232,6 +232,21 @@ class TestInstallPi:
                 install(tmp_path, ["nope"], target="pi")
 
 
+class TestUninstallPi:
+    def test_bare_uninstall_only_user_scope(self, fake_skills_root: Path, tmp_path: Path):
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            install(cwd, target="pi")
+            install(cwd, ["skill-proj"], target="pi")
+            results = uninstall(cwd, target="pi")
+        assert "skill-user-a" in results
+        assert "skill-user-b" in results
+        assert "skill-proj" not in results
+
+
 class TestUninstall:
     def test_bare_uninstall_only_user_scope(self, fake_skills_root: Path, tmp_path: Path):
         cwd = tmp_path / "project"
