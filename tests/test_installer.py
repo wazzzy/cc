@@ -168,6 +168,15 @@ class TestInstall:
                 install(tmp_path, ["nope"])
 
 
+class TestInstallPi:
+    def test_user_skill_goes_to_pi_agent_dir(self, fake_skills_root: Path, tmp_path: Path):
+        fake_home = tmp_path / "home"
+        fake_home.mkdir()
+        with _patch_root(fake_skills_root), _patch_home(fake_home):
+            install(tmp_path, target="pi")
+        assert (fake_home / ".pi" / "agent" / "skills" / "skill-user-a" / "SKILL.md").exists()
+
+
 class TestUninstall:
     def test_bare_uninstall_only_user_scope(self, fake_skills_root: Path, tmp_path: Path):
         cwd = tmp_path / "project"

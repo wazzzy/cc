@@ -26,8 +26,12 @@ def parse_scope(skill_dir: Path) -> str:
     return "project"
 
 
-def _dest_path(cwd: Path, skill_name: str, scope: str) -> Path:
-    """Return target directory for a skill based on its scope."""
+def _dest_path(cwd: Path, skill_name: str, scope: str, target: str = "claude") -> Path:
+    """Return target directory for a skill based on its scope and target agent."""
+    if target == "pi":
+        if scope == "user":
+            return Path.home() / ".pi" / "agent" / "skills" / skill_name
+        return cwd / ".pi" / "skills" / skill_name
     if scope == "user":
         return Path.home() / ".claude" / "skills" / skill_name
     return cwd / ".claude" / "skills" / skill_name
@@ -49,12 +53,14 @@ def list_skills() -> list[tuple[str, str]]:
     ]
 
 
-def install(cwd: Path, names: list[str] | None = None) -> list[tuple[str, str, Path]]:
+def install(cwd: Path, names: list[str] | None = None, target: str = "claude") -> list[tuple[str, str, Path]]:
     """
-    Copy skill .md files to user or project .claude/skills/<skill-name>/.
+    Copy skill .md files to user or project skills directory.
 
     Bare install (names=None) only installs scope:user skills.
     Named install routes each skill by its scope.
+    target="claude" installs to .claude/skills/ (default).
+    target="pi" installs to .pi/skills/ or ~/.pi/agent/skills/.
     Returns list of (name, scope, dest_path).
     Raises ValueError for unknown names.
     """
@@ -74,7 +80,7 @@ def install(cwd: Path, names: list[str] | None = None) -> list[tuple[str, str, P
 
     for skill_dir in skills:
         scope = parse_scope(skill_dir)
-        dest = _dest_path(cwd, skill_dir.name, scope)
+        dest = _dest_path(cwd, skill_dir.name, scope, target)
         dest.mkdir(parents=True, exist_ok=True)
 
         for src_file in skill_dir.iterdir():
