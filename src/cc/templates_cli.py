@@ -18,8 +18,9 @@ def cmd_list(args: argparse.Namespace) -> None:
 
 def cmd_init(args: argparse.Namespace) -> None:
     cwd = Path(args.cwd) if args.cwd else Path.cwd()
+    target = "pi" if args.pi else "claude"
     try:
-        status, dest = init(cwd, args.name, path=args.path, force=args.force)
+        status, dest = init(cwd, args.name, path=args.path, force=args.force, target=target)
     except ValueError as e:
         print(f"error: {e}")
         raise SystemExit(1)
@@ -45,6 +46,7 @@ def main() -> None:
         tpl_p = subparsers.add_parser(tpl_name, help=f"Copy {tpl_name} CLAUDE.md (default: ./{default_path}/)")
         tpl_p.add_argument("--path", metavar="DIR", help="Target directory (overrides default)")
         tpl_p.add_argument("--force", action="store_true", help="Overwrite existing CLAUDE.md")
+        tpl_p.add_argument("--pi", action="store_true", help="Target pi agent (accepted for consistency; path is unchanged)")
         tpl_p.set_defaults(func=cmd_init, name=tpl_name)
 
     args = parser.parse_args()

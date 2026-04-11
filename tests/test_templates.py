@@ -132,6 +132,34 @@ class TestInit:
             status, _ = init(cwd, "django", force=True)
         assert status == "overwritten"
 
+    def test_companion_md_files_are_copied(self, fake_templates_root: Path, tmp_path: Path):
+        """Non-CLAUDE.md companion .md files in the template dir are copied alongside CLAUDE.md."""
+        tpl_dir = fake_templates_root / "django"
+        (tpl_dir / "django-directory-structure.md").write_text("# Dir structure")
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_templates_root):
+            init(cwd, "django")
+        assert (cwd / "backend" / "django-directory-structure.md").exists()
+        assert (cwd / "backend" / "django-directory-structure.md").read_text() == "# Dir structure"
+
+    def test_template_md_is_not_copied(self, fake_templates_root: Path, tmp_path: Path):
+        """TEMPLATE.md (metadata) must never be copied into the project."""
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_templates_root):
+            init(cwd, "django")
+        assert not (cwd / "backend" / "TEMPLATE.md").exists()
+
+    def test_pi_target_accepted(self, fake_templates_root: Path, tmp_path: Path):
+        """Passing target='pi' is accepted and does not change the destination path."""
+        cwd = tmp_path / "project"
+        cwd.mkdir()
+        with _patch_root(fake_templates_root):
+            status, dest = init(cwd, "django", target="pi")
+        assert status == "created"
+        assert dest == cwd / "backend" / "CLAUDE.md"
+
     def test_default_path_dot_installs_to_cwd(self, fake_templates_root: Path, tmp_path: Path):
         """A template with default_path='.' should place CLAUDE.md directly in cwd, not a subdirectory."""
         _make_template(fake_templates_root, "repo", default_path=".")

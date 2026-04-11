@@ -250,6 +250,24 @@ class TestTemplateInit:
         assert "nope" in result.stderr
 
 
+class TestTemplateInitPi:
+    def test_pi_flag_exits_zero(self, tmp_path: Path):
+        result = run_templates("django", "--pi", cwd_arg=tmp_path)
+        assert result.returncode == 0
+
+    def test_pi_flag_creates_claude_md_same_path(self, tmp_path: Path):
+        run_templates("django", "--pi", cwd_arg=tmp_path)
+        assert (tmp_path / "backend" / "CLAUDE.md").exists()
+
+    def test_pi_flag_with_force(self, tmp_path: Path):
+        target = tmp_path / "backend"
+        target.mkdir()
+        (target / "CLAUDE.md").write_text("old")
+        result = run_templates("django", "--pi", "--force", cwd_arg=tmp_path)
+        assert result.returncode == 0
+        assert (target / "CLAUDE.md").read_text() != "old"
+
+
 class TestTemplateList:
     def test_list_exits_zero(self):
         result = run_templates("list")

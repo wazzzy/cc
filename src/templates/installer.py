@@ -44,12 +44,14 @@ def list_templates() -> list[tuple[str, str]]:
     ]
 
 
-def init(cwd: Path, name: str, path: str | None = None, force: bool = False) -> tuple[str, Path]:
+def init(cwd: Path, name: str, path: str | None = None, force: bool = False, target: str = "claude") -> tuple[str, Path]:
     """
-    Copy a template's CLAUDE.md into the target directory.
+    Copy a template's CLAUDE.md (and any companion .md files) into the target directory.
 
     Returns (status, dest_path) where status is "created", "skipped", or "overwritten".
     Raises ValueError for unknown template name.
+    The `target` parameter ("claude" or "pi") is accepted for CLI consistency; the
+    destination path is the same for both since CLAUDE.md lives in the project tree.
     """
     templates_root = _templates_root()
     templates = discover_templates(templates_root)
@@ -59,18 +61,21 @@ def init(cwd: Path, name: str, path: str | None = None, force: bool = False) -> 
         available = ", ".join(sorted(known))
         raise ValueError(f"unknown template: {name}. available: {available}")
 
-    # TODO
-    # Need to add references if present with CLAUDE.md
     meta = parse_template_meta(known[name])
     default_path = meta.get("default_path", name)
     target_dir = cwd / (path or default_path)
     dest = target_dir / "CLAUDE.md"
-    src = known[name] / "CLAUDE.md"
 
     if dest.exists() and not force:
         return ("skipped", dest)
 
     status = "overwritten" if dest.exists() else "created"
     target_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, dest)
+
+    # Copy CLAUDE.md and all companion .md files referenced alongside it
+    template_dir = known[name]
+    for src_file in sorted(template_dir.iterdir()):
+        if src_file.is_file() and src_file.suffix == ".md" and src_file.name != "TEMPLATE.md":
+            shutil.copy2(src_file, target_dir / src_file.name)
+
     return (status, dest)
