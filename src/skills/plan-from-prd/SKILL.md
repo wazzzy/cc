@@ -82,7 +82,7 @@ Durable decisions that apply across all phases:
 
 ### What to build
 
-A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation.
+A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation. Reference specific sections of the parent Plan rather than duplicating content.
 
 ### Acceptance criteria
 
