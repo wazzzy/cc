@@ -8,7 +8,7 @@ backend/
 │   │   ├── base.py
 │   │   ├── development.py
 │   │   └── production.py
-│   ├── urls.py                       # api/v1/ namespace
+│   ├── urls.py
 │   ├── asgi.py
 │   ├── wsgi.py
 │   └── celery.py
@@ -27,48 +27,13 @@ backend/
 │   │   ├── admin.py
 │   │   ├── tests/
 │   │   └── migrations/
-│   ├── features/
-│   │   ├── __init__.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── serializers.py
-│   │   ├── views.py
-│   │   ├── urls.py
-│   │   ├── services.py
-│   │   ├── admin.py
-│   │   ├── tests/
-│   │   └── migrations/
-│   ├── configs/
-│   │   ├── __init__.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── serializers.py
-│   │   ├── views.py
-│   │   ├── urls.py
-│   │   ├── services.py
-│   │   ├── admin.py
-│   │   ├── tests/
-│   │   └── migrations/
 │   ├── documents/
 │   │   ├── __init__.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── serializers.py
-│   │   ├── views.py
-│   │   ├── urls.py
-│   │   ├── services.py
 │   │   ├── admin.py
 │   │   ├── tests/
 │   │   └── migrations/
 │   └── usage/
 │       ├── __init__.py
-│       ├── apps.py
-│       ├── models.py
-│       ├── serializers.py
-│       ├── views.py
-│       ├── urls.py
-│       ├── services.py
-│       ├── tasks.py
 │       ├── admin.py
 │       ├── tests/
 │       └── migrations/
@@ -81,22 +46,14 @@ backend/
 │   ├── pagination.py                 # Standard pagination configs
 │   ├── exceptions.py                 # Custom exception classes + DRF exception handler
 │   ├── renderers.py                  # Consistent API response format
-│   ├── throttling.py                 # Per-tenant throttle classes
-│   ├── models.py                     # Abstract bases: TimestampedModel, TenantScopedModel
+│   ├── throttling.py                 # Throttle classes
+│   ├── models.py                     # Abstract bases: TimestampedModel
 │   ├── utils.py                      # Small shared helpers, if large else create a utils dir
 │   └── tests/
 │
 ├── integrations/
 │   ├── __init__.py
-│   ├── keycloak/                     # Keycloak/Auth0 client
-│   │   ├── __init__.py
-│   │   ├── client.py
-│   │   └── config.py
-│   ├── ragflow/                      # RAGFlow client
-│   │   ├── __init__.py
-│   │   ├── client.py
-│   │   └── config.py
-│   ├── llm_gateway/                  # LiteLLM client
+│   ├── keycloak/                     # External client like keycloak
 │   │   ├── __init__.py
 │   │   ├── client.py
 │   │   └── config.py
@@ -114,8 +71,6 @@ backend/
 ├── pyproject.toml
 ├── README.md
 └── uv.lock
-docs
-└── Helix-Platform.md
 frontend
 └── ...
 supervisor_logs

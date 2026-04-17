@@ -59,7 +59,9 @@ Complex logic must move to services.
 
 7. Folder Structure
 
-Follow the standard Django app layout under `backend/apps/`. The apps listed below are examples, NOT an exhaustive list. Create new apps when needed.
+Follow the standard Django app layout under `backend/apps/`.
+
+Refer [django-directory-structure.md](django-directory-structure.md) for the base pattern. The apps listed below are examples, NOT an exhaustive list. Create new apps when needed.
 
 8. Creating New Django Apps
 
@@ -87,8 +89,10 @@ Create a new app when the feature has its own models not closely related to exis
 10. After Model Changes
 
 Always run:
+
 - `uv run manage.py makemigrations`
-- `uv run manage.py migrate`
+- `uv run manage.py migrate_schemas`
+- `uv run manage.py migrate_schemas --shared` (only at the start of the project)
 
 11. Performance Rules
 
@@ -132,6 +136,7 @@ uv run pytest -x -q --tb=no
 - `--tb=no` suppresses tracebacks — only pass/fail signal matters here
 
 **Decision:**
+
 - All pass → proceed to Phase 3
 - Any fail → proceed to Phase 2
 
@@ -144,6 +149,7 @@ uv run pytest --tb=line -q 2>&1 | grep "FAILED"
 ```
 
 This outputs node IDs like:
+
 ```
 tests/test_auth.py::test_login_invalid
 tests/test_db.py::test_connection_timeout

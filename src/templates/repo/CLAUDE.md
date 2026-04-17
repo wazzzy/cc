@@ -25,4 +25,17 @@ Always run in order. Never skip phases.
    Only mark complete after this passes.
 
 # Workflow
-1. Read PRD/Plan → 2. Use tdd → 3. Implement → 4. Run testing protocol → 5. Log changes
+1. Read PRD → 2. Write tests → 3. Implement → 4. Run testing protocol → 5. Log changes
+
+## Context Rules (STRICT)
+* Never read the same file twice
+* If a file was already read, reuse that content
+* Read only what is necessary (avoid full files)
+* If you are re-reading files, consider referencing earlier reads. Use offset/limit for large files.
+* Expand context only when required
+* Use Grep instead of Read for searching
+
+Before any file read:
+Ask: "Do I already have this?"
+If yes → reuse
+If partial → extend, don’t reload
